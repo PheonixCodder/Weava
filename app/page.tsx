@@ -1,6 +1,9 @@
+import prisma from '@/lib/db'
 import React from 'react'
 
-const Home = () => {
+const Home = async () => {
+
+
   return (
     <div>
       
