@@ -1,3 +1,4 @@
+import { requireAuth } from '@/lib/auth-utils';
 import { caller } from '@/trpc/server'
 import React from 'react'
 import LogoutBtn from './features/auth/components/logout';
