@@ -2,11 +2,11 @@ import { caller } from '@/trpc/server'
 import React from 'react'
 
 const Home = async () => {
-  const res = await caller.getUser()
+  const accounts = await caller.getAccounts();
   return (
     <div>
-      {JSON.stringify(res)}
-      
+      <h1>Accounts</h1>
+      <pre>{JSON.stringify(accounts, null, 2)}</pre>
     </div>
   )
 }
