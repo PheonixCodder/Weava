@@ -61,7 +61,6 @@ export function LoginForm() {
   const isPending = form.formState.isSubmitting;
 
   return (
-    <div className="flex flex-col gap-6">
       <Card className="w-full max-w-md bg-white/80 backdrop-blur-md shadow-2xl rounded-2xl border border-gray-200">
         <CardHeader className="text-center">
           <CardTitle className="text-2xl font-bold">Welcome Back</CardTitle>
@@ -167,6 +166,5 @@ export function LoginForm() {
           </Form>
         </CardContent>
       </Card>
-    </div>
   );
 }

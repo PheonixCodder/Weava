@@ -70,7 +70,6 @@ const { data, error } = await authClient.signUp.email({
   const isPending = form.formState.isSubmitting;
 
   return (
-    <div className="flex flex-col gap-6">
       <Card className="w-full max-w-md shadow-2xl rounded-2xl border border-gray-200">
         <CardHeader className="text-center">
           <CardTitle className="text-2xl font-bold">Create an Account</CardTitle>
@@ -194,6 +193,5 @@ const { data, error } = await authClient.signUp.email({
           </Form>
         </CardContent>
       </Card>
-    </div>
   );
 }
