@@ -1,7 +1,9 @@
+import { requireAuth } from '@/lib/auth-utils';
 import { caller } from '@/trpc/server'
 import React from 'react'
 
 const Home = async () => {
+  await requireAuth();
   const accounts = await caller.getAccounts();
   return (
     <div>
