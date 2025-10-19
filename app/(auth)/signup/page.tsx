@@ -5,9 +5,7 @@ import React from 'react'
 const SignUp = async () => {
     await requireNoAuth();
   return (
-    <div className='flex min-h-screen items-center justify-center'>
         <SignUpForm />
-    </div>
   )
 }
 
