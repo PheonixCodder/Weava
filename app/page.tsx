@@ -1,8 +1,7 @@
-import { requireAuth } from '@/lib/auth-utils';
-import { caller } from '@/trpc/server'
+"use client";
+
 import React from 'react'
 import LogoutBtn from './features/auth/components/logout';
-import { requireAuth } from '@/lib/auth-utils';
 import { useTRPC } from '@/trpc/client';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { Button } from '@/components/ui/button';
