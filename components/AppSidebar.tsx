@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { Suspense } from "react";
 import {
   CreditCardIcon,
   FolderOpenIcon,
@@ -24,6 +24,9 @@ import {
   SidebarMenu,
 } from "./ui/sidebar";
 import { authClient } from "@/lib/auth-client";
+import { useHasActiveSubscription } from "@/app/features/subscriptions/hooks/use-subscription";
+import { Skeleton } from "@/components/ui/skeleton"
+
 
 const menuItems = [
   {
@@ -51,6 +54,8 @@ const menuItems = [
 export const AppSidebar = () => {
   const router = useRouter();
   const pathname = usePathname();
+  const { hasActiveSubscription, isLoading } = useHasActiveSubscription()
+
 
   return (
     <Sidebar collapsible="icon">
@@ -96,14 +101,18 @@ export const AppSidebar = () => {
       </SidebarContent>
       <SidebarFooter>
         <SidebarMenu>
+          {!hasActiveSubscription && !isLoading &&
+          <Suspense fallback={<MenuSkeleton />}>
           <SidebarMenuItem>
-            <SidebarMenuButton tooltip={"Upgrade to Pro"} className="gap-x-4 h-10 px-4" onClick={() => router.push("/pricing")}>
+            <SidebarMenuButton tooltip={"Upgrade to Pro"} className="gap-x-4 h-10 px-4" onClick={() => authClient.checkout({slug: "pro"})}>
               <StarIcon className="size-4" />
               <span>Upgrade to Pro</span>
             </SidebarMenuButton>
           </SidebarMenuItem>
+          </Suspense>
+          }
           <SidebarMenuItem>
-            <SidebarMenuButton tooltip={"Billing Portal"} className="gap-x-4 h-10 px-4" onClick={() => router.push("/pricing")}>
+            <SidebarMenuButton tooltip={"Billing Portal"} className="gap-x-4 h-10 px-4" onClick={() => authClient.customer.portal()}>
               <CreditCardIcon className="size-4" />
               <span>Billing Portal</span>
             </SidebarMenuButton>
@@ -125,3 +134,10 @@ export const AppSidebar = () => {
     </Sidebar>
   );
 };
+
+
+const MenuSkeleton = () => {
+  return (
+    <Skeleton className="h-[40px]" />
+  )
+}
