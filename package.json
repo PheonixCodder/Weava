@@ -11,7 +11,9 @@
     "dev:all": "mprocs"
   },
   "dependencies": {
+    "@ai-sdk/anthropic": "^2.0.35",
     "@ai-sdk/google": "^2.0.23",
+    "@ai-sdk/openai": "^2.0.53",
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.1",
     "@hookform/resolvers": "^5.2.2",
