@@ -1,7 +1,6 @@
 "use client";
 
 import React from 'react'
-import LogoutBtn from './features/auth/components/logout';
 import { useTRPC } from '@/trpc/client';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { Button } from '@/components/ui/button';
@@ -24,7 +23,6 @@ const Home = () => {
       <h1>Accounts</h1>
       <pre>{JSON.stringify(data, null, 2)}</pre>
       <Button disabled={create.isPending} onClick={() => create.mutate()}>Create Workflow</Button>
-      <LogoutBtn />
     </div>
   )
 }
