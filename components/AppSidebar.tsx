@@ -2,9 +2,6 @@
 import React, { Suspense } from "react";
 import {
   CreditCardIcon,
-  FolderOpenIcon,
-  HistoryIcon,
-  KeyIcon,
   LogOutIcon,
   StarIcon,
 } from "lucide-react";
@@ -25,31 +22,8 @@ import {
 } from "./ui/sidebar";
 import { authClient } from "@/lib/auth-client";
 import { useHasActiveSubscription } from "@/app/features/subscriptions/hooks/use-subscription";
-import { Skeleton } from "@/components/ui/skeleton"
+import { menuItems } from "@/lib/utils";
 
-
-const menuItems = [
-  {
-    title: "Home",
-    items: [
-      {
-        title: "Workflows",
-        icon: FolderOpenIcon,
-        url: "/workflows",
-      },
-      {
-        title: "Credentials",
-        icon: KeyIcon,
-        url: "/credentials",
-      },
-      {
-        title: "Executions",
-        icon: HistoryIcon,
-        url: "/executions",
-      },
-    ],
-  },
-];
 
 export const AppSidebar = () => {
   const router = useRouter();
@@ -102,14 +76,12 @@ export const AppSidebar = () => {
       <SidebarFooter>
         <SidebarMenu>
           {!hasActiveSubscription && !isLoading &&
-          <Suspense fallback={<MenuSkeleton />}>
           <SidebarMenuItem>
             <SidebarMenuButton tooltip={"Upgrade to Pro"} className="gap-x-4 h-10 px-4" onClick={() => authClient.checkout({slug: "pro"})}>
               <StarIcon className="size-4" />
               <span>Upgrade to Pro</span>
             </SidebarMenuButton>
           </SidebarMenuItem>
-          </Suspense>
           }
           <SidebarMenuItem>
             <SidebarMenuButton tooltip={"Billing Portal"} className="gap-x-4 h-10 px-4" onClick={() => authClient.customer.portal()}>
@@ -134,10 +106,3 @@ export const AppSidebar = () => {
     </Sidebar>
   );
 };
-
-
-const MenuSkeleton = () => {
-  return (
-    <Skeleton className="h-[40px]" />
-  )
-}

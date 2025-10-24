@@ -1,17 +1,9 @@
-import { baseProcedure, createTRPCRouter, protectedProcedure } from '@/trpc/init';
+import { createTRPCRouter } from '@/trpc/init';
 import prisma from '@/lib/db';
+import { workflowsRouter } from '@/app/features/workflows/server/routers';
 
 export const appRouter = createTRPCRouter({
-  getWorkflows: protectedProcedure.query(({ctx}) => {
-    return prisma.workflow.findMany()
-  }),
-  createWorkflow : protectedProcedure.mutation(() => {
-    return prisma.workflow.create({
-      data: {
-        name: "New Workflow"
-      }
-    });
-  })
+  workflows: workflowsRouter
 });
 // export type definition of API
 export type AppRouter = typeof appRouter;

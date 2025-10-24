@@ -1,6 +1,6 @@
 procs:
   inngest:
-    cmd: ["pnpm", "run", "inngest-cli", "dev"]
+    shell: "pnpm dlx inngest-cli@latest dev"
 
   next:
-    cmd: ["pnpm", "run", "dev"]
+    shell: "pnpm run dev"
