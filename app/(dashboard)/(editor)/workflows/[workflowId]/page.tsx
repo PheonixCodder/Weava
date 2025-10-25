@@ -1,35 +1,39 @@
-import { Editor, EditorError, EditorLoading } from '@/app/features/workflows/editor/components/editor'
-import EditorHeader from '@/app/features/workflows/editor/components/editor-header'
-import { prefetchWorkflow } from '@/app/features/workflows/server/prefetch'
-import { requireAuth } from '@/lib/auth-utils'
-import { HydrateClient } from '@/trpc/server'
-import React, { Suspense } from 'react'
-import { ErrorBoundary } from 'react-error-boundary'
+import {
+  Editor,
+  EditorError,
+  EditorLoading,
+} from "@/features/workflows/editor/components/editor";
+import EditorHeader from "@/features/workflows/editor/components/editor-header";
+import { prefetchWorkflow } from "@/features/workflows/server/prefetch";
+import { requireAuth } from "@/lib/auth-utils";
+import { HydrateClient } from "@/trpc/server";
+import React, { Suspense } from "react";
+import { ErrorBoundary } from "react-error-boundary";
 
 interface PageProps {
-    params : Promise<{
-        workflowId : string
-    }>
+  params: Promise<{
+    workflowId: string;
+  }>;
 }
 
-const Page = async ( {params} : PageProps) => {
-  const {workflowId} = await params
-  
-  await requireAuth()
-  
-  prefetchWorkflow(workflowId)
+const Page = async ({ params }: PageProps) => {
+  const { workflowId } = await params;
+
+  await requireAuth();
+
+  prefetchWorkflow(workflowId);
   return (
     <HydrateClient>
       <ErrorBoundary fallback={<EditorError />}>
-      <Suspense fallback={<EditorLoading />}>
-      <EditorHeader workflowId={workflowId}  />
-      <main className='flex-1'>
-        <Editor workflowId={workflowId} />
-        </main>
-      </Suspense>
+        <Suspense fallback={<EditorLoading />}>
+          <EditorHeader workflowId={workflowId} />
+          <main className="flex-1">
+            <Editor workflowId={workflowId} />
+          </main>
+        </Suspense>
       </ErrorBoundary>
     </HydrateClient>
-  )
-}
+  );
+};
 
-export default Page
+export default Page;
