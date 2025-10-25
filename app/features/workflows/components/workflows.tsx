@@ -1,11 +1,26 @@
 "use client"
 import React from 'react'
-import { useCreateWorkflow, useSuspenseWorkflows } from '../hooks/use-workflows'
-import { EntityContainer, EntityHeader, EntityPagination, EntitySearch } from '@/components/entity-components'
+import { useCreateWorkflow, useRemoveWorkflow, useSuspenseWorkflows } from '../hooks/use-workflows'
+import { EmptyView, EntityContainer, EntityHeader, EntityItem, EntityList, EntityPagination, EntitySearch, ErrorView, LoadingView } from '@/components/entity-components'
 import { useUpgradeModal } from '@/hooks/use-upgrade-modal'
 import { useRouter } from 'next/navigation'
 import { useWorkflowParams } from '../hooks/use-workflows-params'
 import { useEntitySearch } from '@/hooks/use-entity-search'
+import { Workflow } from '@/lib/generated/prisma'
+import { WorkflowIcon } from 'lucide-react'
+import { formatDistanceToNow } from "date-fns"
+
+export const WorkflowsLoading = () => {
+  return (
+    <LoadingView message="Loading workflows" />
+  )
+}
+
+export const WorkflowsError = () => {
+  return (
+    <ErrorView message="Error loading workflows" />
+  )
+}
 
 export const WorkflowsPagination = () => {
   const workflows = useSuspenseWorkflows()
@@ -24,13 +39,26 @@ export const WorkflowSearch = () => {
   )
 }
 
+
+export const WorkflowItem = ({data} : { data: Workflow}) => {
+  
+  const removeWorkflow = useRemoveWorkflow();
+
+  const handleRemoveWorkflow = () => {
+    removeWorkflow.mutate({id: data.id});
+  }
+
+  return (
+    <EntityItem title={data.name} href={`/workflows/${data.id}`} subTitle={<>Updated {formatDistanceToNow(new Date(data.updatedAt), { addSuffix: true })} &bull; Created {formatDistanceToNow(new Date(data.createdAt) , { addSuffix: true })} </>} image={<div className='size-8 flex items-center justify-center'><WorkflowIcon /></div>} onRemove={handleRemoveWorkflow} isRemoving={removeWorkflow.isPending} />
+  )
+}
+
 const WorkflowsList = () => {
     const workflows = useSuspenseWorkflows()
-  return (
-    <div className='flex-1 flex justify-center items-center'>
-      {JSON.stringify(workflows.data)}
-    </div>
-  )
+    
+    return (
+      <EntityList items={workflows.data.items} renderItem={(workflow) => <WorkflowItem data={workflow} />} emptyView={<WorkflowsEmpty />} getKey={(workflow) => workflow.id} />
+    )
 }
 
 export default WorkflowsList
@@ -39,12 +67,14 @@ export const WorkflowsHeader = ({ disabled }: { disabled?: boolean }) => {
   const router = useRouter();
   const createWorkflow = useCreateWorkflow()
   const { handleError, modal } = useUpgradeModal();
+  
 
   const handleCreateWorkflow = () => {
     createWorkflow.mutate(undefined, {
       onSuccess: (data) => {
         router.push(`/workflows/${data.id}`);
       },
+
       onError: (error) => {
         handleError(error);
       },
@@ -64,5 +94,29 @@ export const WorkflowsContainer = ( { children }: { children: React.ReactNode}) 
     <EntityContainer header={<WorkflowsHeader />} search={<WorkflowSearch />} pagination={<WorkflowsPagination />}>
         {children}
     </EntityContainer>
+  )
+}
+
+export const WorkflowsEmpty = () => {
+  const createWorkflow = useCreateWorkflow();
+  const { handleError, modal } = useUpgradeModal()
+  const router = useRouter();
+
+  const handleCreateWorkflow = () => {
+    createWorkflow.mutate(undefined, {
+      onSuccess: (data) => {
+        router.push(`/workflows/${data.id}`);
+      },
+      onError: (error) => {
+        handleError(error);
+      },
+    });
+  }
+
+  return (
+    <>
+    {modal}
+    <EmptyView message="You haven't created any workflows yet. Click the button below to get started" onNew={handleCreateWorkflow} />
+    </>
   )
 }
