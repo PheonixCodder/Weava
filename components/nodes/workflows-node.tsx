@@ -6,7 +6,7 @@ import type { ReactNode } from "react"
 import { Button } from "../ui/button"
 
 interface WorkflowNodeProps {
-    children: ReactNode
+    children?: ReactNode
     showToolbars?: boolean
     onDelete?: () => void
     onSettings?: () => void
