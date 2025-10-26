@@ -25,7 +25,7 @@ export function WorkflowNode({
     return (
         <>
         {showToolbars && (
-            <NodeToolbar position={Position.Right}>
+            <NodeToolbar position={Position.Top}>
                 <Button size="sm" variant="ghost" onClick={onSettings}>
                     <SettingsIcon className="size-4" />
                 </Button>
