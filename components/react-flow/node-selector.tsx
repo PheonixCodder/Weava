@@ -13,8 +13,8 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "../ui/sheet";
-import { NodeType } from "@/lib/generated/prisma";
 import { Separator } from "../ui/separator";
+import { NodeType } from "@prisma/client";
 
 export type NodeTypeOption = {
   label: string;

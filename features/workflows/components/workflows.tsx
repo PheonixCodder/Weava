@@ -6,9 +6,9 @@ import { useUpgradeModal } from '@/hooks/use-upgrade-modal'
 import { useRouter } from 'next/navigation'
 import { useWorkflowParams } from '../hooks/use-workflows-params'
 import { useEntitySearch } from '@/hooks/use-entity-search'
-import { Workflow } from '@/lib/generated/prisma'
 import { WorkflowIcon } from 'lucide-react'
 import { formatDistanceToNow } from "date-fns"
+import { Workflow } from '@prisma/client'
 
 export const WorkflowsLoading = () => {
   return (
@@ -57,7 +57,7 @@ const WorkflowsList = () => {
     const workflows = useSuspenseWorkflows()
     
     return (
-      <EntityList items={workflows.data.items} renderItem={(workflow) => <WorkflowItem data={workflow} />} emptyView={<WorkflowsEmpty />} getKey={(workflow) => workflow.id} />
+      <EntityList items={workflows.data.items} renderItem={(workflow: Workflow) => <WorkflowItem data={workflow} />} emptyView={<WorkflowsEmpty />} getKey={(workflow: Workflow) => workflow.id} />
     )
 }
 
