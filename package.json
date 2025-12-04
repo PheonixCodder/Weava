@@ -7,7 +7,7 @@
     "build": "next build --turbopack",
     "start": "next start",
     "lint": "eslint",
-    "inngest:dev": "pnpm dlx inngest-cli dev",
+    "inngest:dev": "npx inngest-cli dev",
     "dev:all": "mprocs"
   },
   "dependencies": {
