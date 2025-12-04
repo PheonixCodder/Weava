@@ -7,10 +7,9 @@ import {
 import { toast } from "sonner";
 import { useWorkflowParams } from "./use-workflows-params";
 
-
 export const useSuspenseWorkflows = () => {
   const trpc = useTRPC();
-  const [params] = useWorkflowParams()
+  const [params] = useWorkflowParams();
   return useSuspenseQuery(trpc.workflows.getMany.queryOptions(params));
 };
 
@@ -62,7 +61,9 @@ export const useUpdateWorkflowName = () => {
       onSuccess: (data) => {
         toast.success(`Workflow ${data.name} updated`);
         queryClient.invalidateQueries(trpc.workflows.getMany.queryOptions({}));
-        queryClient.invalidateQueries(trpc.workflows.getOne.queryOptions({ id: data.id }));
+        queryClient.invalidateQueries(
+          trpc.workflows.getOne.queryOptions({ id: data.id })
+        );
       },
       onError: (error) => {
         toast.error(`Failed to update workflow ${error.message}`);
@@ -70,7 +71,6 @@ export const useUpdateWorkflowName = () => {
     })
   );
 };
-
 
 export const useUpdateWorkflow = () => {
   const trpc = useTRPC();
@@ -81,11 +81,28 @@ export const useUpdateWorkflow = () => {
       onSuccess: (data) => {
         toast.success(`Workflow ${data.name} saved`);
         queryClient.invalidateQueries(trpc.workflows.getMany.queryOptions({}));
-        queryClient.invalidateQueries(trpc.workflows.getOne.queryOptions({ id: data.id }));
+        queryClient.invalidateQueries(
+          trpc.workflows.getOne.queryOptions({ id: data.id })
+        );
       },
       onError: (error) => {
         toast.error(`Failed to save workflow ${error.message}`);
       },
     })
   );
-}
+};
+
+export const useExecuteWorkflow = () => {
+  const trpc = useTRPC();
+
+  return useMutation(
+    trpc.workflows.execute.mutationOptions({
+      onSuccess: (data) => {
+        toast.success(`Workflow ${data.name} saved`);
+      },
+      onError: (error) => {
+        toast.error(`Failed to save workflow ${error.message}`);
+      },
+    })
+  );
+};

@@ -1,5 +1,5 @@
 import prisma from "@/lib/db";
-import { NodeType } from "@/lib/generated/prisma";
+import { NodeType } from "@prisma/client";
 import { PAGINATION } from "@/lib/utils";
 import {
   createTRPCRouter,
@@ -8,9 +8,25 @@ import {
 } from "@/trpc/init";
 import { Edge, Node } from "@xyflow/react";
 import { generateSlug } from "random-word-slugs";
-import z, { unknown } from "zod";
+import z from "zod";
+import { inngest } from "@/inngest/client";
 
 export const workflowsRouter = createTRPCRouter({
+  execute: protectedProcedure
+    .input(z.object({ id: z.string() }))
+    .mutation(async ({ ctx, input }) => {
+      const workflow = await prisma.workflow.findUniqueOrThrow({
+        where: { id: input.id, userId: ctx.auth.user.id },
+        include: { nodes: true, connection: true },
+      });
+
+      await inngest.send({
+        name: "workflows/execute.workflow",
+        data: { workflowId: workflow.id, initializeData: {} },
+      });
+
+      return workflow;
+    }),
   create: premiumProcedure.mutation(({ ctx }) => {
     return prisma.workflow.create({
       data: {
@@ -45,15 +61,14 @@ export const workflowsRouter = createTRPCRouter({
     .input(
       z.object({
         id: z.string(),
-        nodes: z
-          .array(
-            z.object({
-              id: z.string(),
-              type: z.string().nullish(),
-              position: z.object({ x: z.number(), y: z.number() }),
-              data: z.record(z.string(), z.any()).optional(),
-            })
-          ),
+        nodes: z.array(
+          z.object({
+            id: z.string(),
+            type: z.string().nullish(),
+            position: z.object({ x: z.number(), y: z.number() }),
+            data: z.record(z.string(), z.any()).optional(),
+          })
+        ),
         edges: z.array(
           z.object({
             source: z.string(),
@@ -106,7 +121,7 @@ export const workflowsRouter = createTRPCRouter({
           data: { updatedAt: new Date() },
         });
 
-        return workflow
+        return workflow;
       });
     }),
   getOne: protectedProcedure
