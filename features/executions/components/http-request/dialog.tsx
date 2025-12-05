@@ -54,31 +54,32 @@ export const HttpRequestDialog = ({
   onSubmit,
   defaultValues = {}
 }: Props) => {
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      variableName: defaultValues.variableName || "",
-      endpoint: defaultValues.endpoint || "",
-      method: defaultValues.method || "GET",
-      body: defaultValues?.body || "",
-    },
-  });
+const form = useForm<z.infer<typeof formSchema>>({
+  resolver: zodResolver(formSchema),
+  defaultValues: {
+    variableName: defaultValues.variableName || "",
+    endpoint: defaultValues.endpoint || "",
+    method: defaultValues.method || "GET",
+    body: defaultValues.body || "",
+  },
+});
+
 
   const watchMethod = form.watch("method");
   const showBodyField = ["POST", "PUT", "PATCH", "DELETE"].includes(
     watchMethod
   );
 
-  useEffect(() => {
-    if (open) {
-        form.reset({
-            variableName: defaultValues.variableName || "",
-            endpoint: defaultValues.endpoint,
-            method: defaultValues.method,
-            body: defaultValues.body
-        })
-    }
-  }, [open, defaultValues, form])
+useEffect(() => {
+  if (open) {
+    form.reset({
+      variableName: defaultValues.variableName || "",
+      endpoint: defaultValues.endpoint || "",
+      method: defaultValues.method || "GET",
+      body: defaultValues.body || "",
+    });
+  }
+}, [open, defaultValues, form]);
 
   const handleSubmit = (values: z.infer<typeof formSchema>) => {
     onSubmit(values);
