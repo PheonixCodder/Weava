@@ -9,7 +9,7 @@ import {
 import { Edge, Node } from "@xyflow/react";
 import { generateSlug } from "random-word-slugs";
 import z from "zod";
-import { inngest } from "@/inngest/client";
+import { sendWorkflowExecution } from "@/inngest/utils";
 
 export const workflowsRouter = createTRPCRouter({
   execute: protectedProcedure
@@ -20,13 +20,11 @@ export const workflowsRouter = createTRPCRouter({
         include: { nodes: true, connection: true },
       });
 
-      await inngest.send({
-        name: "workflows/execute.workflow",
-        data: { workflowId: workflow.id, initializeData: {} },
-      });
+      await sendWorkflowExecution({ workflowId: input.id });
 
       return workflow;
     }),
+
   create: premiumProcedure.mutation(({ ctx }) => {
     return prisma.workflow.create({
       data: {
@@ -42,6 +40,7 @@ export const workflowsRouter = createTRPCRouter({
       },
     });
   }),
+
   remove: protectedProcedure
     .input(z.object({ id: z.string() }))
     .mutation(({ ctx, input }) => {
@@ -49,6 +48,7 @@ export const workflowsRouter = createTRPCRouter({
         where: { id: input.id, userId: ctx.auth.user.id },
       });
     }),
+
   updateName: protectedProcedure
     .input(z.object({ id: z.string(), name: z.string() }))
     .mutation(({ ctx, input }) => {
@@ -57,6 +57,7 @@ export const workflowsRouter = createTRPCRouter({
         data: { name: input.name },
       });
     }),
+
   update: protectedProcedure
     .input(
       z.object({
@@ -124,6 +125,7 @@ export const workflowsRouter = createTRPCRouter({
         return workflow;
       });
     }),
+
   getOne: protectedProcedure
     .input(z.object({ id: z.string() }))
     .query(async ({ ctx, input }) => {
@@ -156,6 +158,7 @@ export const workflowsRouter = createTRPCRouter({
         edges,
       };
     }),
+
   getMany: protectedProcedure
     .input(
       z.object({
