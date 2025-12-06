@@ -1,0 +1,231 @@
+"use client";
+
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import z from "zod";
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import { Button } from "@/components/ui/button";
+import { useEffect } from "react";
+import type { GoogleGenerativeAIModelId } from "@ai-sdk/google";
+
+export const availableModels: GoogleGenerativeAIModelId[] = [
+  "gemini-1.5-flash",
+  "gemini-1.5-flash-latest",
+  "gemini-1.5-flash-001",
+  "gemini-1.5-flash-002",
+  "gemini-1.5-flash-8b",
+  "gemini-1.5-flash-8b-latest",
+  "gemini-1.5-flash-8b-001",
+
+  "gemini-1.5-pro",
+  "gemini-1.5-pro-latest",
+  "gemini-1.5-pro-001",
+  "gemini-1.5-pro-002",
+
+  "gemini-2.0-flash",
+  "gemini-2.0-flash-001",
+  "gemini-2.0-flash-live-001",
+  "gemini-2.0-flash-lite",
+  "gemini-2.0-pro-exp-02-05",
+  "gemini-2.0-flash-thinking-exp-01-21",
+  "gemini-2.0-flash-exp",
+
+  "gemini-2.5-pro",
+  "gemini-2.5-flash",
+  "gemini-2.5-flash-image-preview",
+  "gemini-2.5-flash-lite",
+  "gemini-2.5-flash-lite-preview-09-2025",
+  "gemini-2.5-flash-preview-04-17",
+  "gemini-2.5-flash-preview-09-2025",
+  "gemini-2.5-pro-exp-03-25",
+
+  "gemini-exp-1206",
+
+  "gemma-3-12b-it",
+  "gemma-3-27b-it",
+];
+
+
+const formSchema = z.object({
+  variableName: z.string().min(1,{ message: "Variable name is required"}).regex(/^[a-zA-Z_][a-zA-Z0-9_]*$/, { message: "Variable name must start with a letter or underscore and contain only letters, numbers, and underscores." }),
+  model: z.enum(availableModels),
+  systemPrompt: z.string().optional(),
+  userPrompt: z.string().min(1, "User prompt is required"),
+});
+
+export type GeminiFormValues = z.infer<typeof formSchema>;
+
+interface Props {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  onSubmit: (values: z.infer<typeof formSchema>) => void;
+  defaultValues?: Partial<GeminiFormValues>
+}
+
+export const GeminiDialog = ({
+  open,
+  onOpenChange,
+  onSubmit,
+  defaultValues = {}
+}: Props) => {
+
+const form = useForm<z.infer<typeof formSchema>>({
+  resolver: zodResolver(formSchema),
+  defaultValues: {
+    variableName: defaultValues.variableName || "",
+    model: defaultValues.model || availableModels[0],
+    systemPrompt: defaultValues.systemPrompt || "",
+    userPrompt: defaultValues.userPrompt || "",
+  },
+});
+
+useEffect(() => {
+  if (open) {
+    form.reset({
+      variableName: defaultValues.variableName || "",
+    model: defaultValues.model || availableModels[0],
+    systemPrompt: defaultValues.systemPrompt || "",
+    userPrompt: defaultValues.userPrompt || "",
+    });
+  }
+}, [open, defaultValues, form]);
+
+  const handleSubmit = (values: z.infer<typeof formSchema>) => {
+    onSubmit(values);
+    onOpenChange(false);
+  };
+
+
+  const watchVariableName = form.watch("variableName") || "myAIResponse";
+
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>Gemini</DialogTitle>
+          <DialogDescription>
+            Configure settings for gemini node
+          </DialogDescription>
+        </DialogHeader>
+        <Form {...form}>
+          <form
+            onSubmit={form.handleSubmit(handleSubmit)}
+            className="space-y-8 mt-4"
+          >
+            <FormField
+              control={form.control}
+              name="variableName"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Variable Name</FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder="myAIResponse"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormDescription>
+                    Use this name to reference the response data in later nodes. For example:
+                    {`{{${watchVariableName}.text}}`}
+                  </FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="model"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Model</FormLabel>
+                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                    <FormControl>
+                      <SelectTrigger className="w-full">
+                        <SelectValue placeholder="Select a model" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      {availableModels.map((model) => (
+                        <SelectItem key={model} value={model}>
+                          {model}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <FormDescription>
+                    The Gemini model to use for this request.
+                  </FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+              <FormField
+                control={form.control}
+                name="systemPrompt"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>System Prompt (Optional)</FormLabel>
+                    <FormControl>
+                      <Textarea
+                        className="min-h-[80px] font-mono text-sm"
+                        placeholder={`You are a helpful assistant that provides concise answers.`}
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormDescription>Sets the behavior of the assistant. Use {"{{variables}}"} for simple values or {"{{json variable}}"} to stringify objects</FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="userPrompt"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>User Prompt</FormLabel>
+                    <FormControl>
+                      <Textarea
+                        className="min-h-[120px] font-mono text-sm"
+                        placeholder={`Summarize the text {{json httpResponse.data}}`}
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormDescription>The prompt to send to the AI. Use {"{{variables}}"} for simple values or {"{{json variable}}"} to stringify objects</FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            <DialogFooter className="mt-4">
+              <Button type="submit">Save</Button>
+            </DialogFooter>
+          </form>
+        </Form>
+      </DialogContent>
+    </Dialog>
+  );
+};

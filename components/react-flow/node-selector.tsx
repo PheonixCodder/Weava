@@ -54,6 +54,27 @@ const executionNodes: NodeTypeOption[] = [
     description: "Makes an HTTP request to a URL",
     icon: GlobeIcon,
   },
+  {
+    type: NodeType.GEMINI,
+    label: "Gemini",
+    description:
+      "Use Gemini AI capabilities in your workflows",
+    icon: "/images/gemini.svg",
+  },
+  {
+    type: NodeType.OPENAI,
+    label: "OpenAI",
+    description:
+      "Use OpenAI capabilities in your workflows",
+    icon: "/images/openai.svg",
+  },
+  {
+    type: NodeType.ANTHROPIC,
+    label: "Anthropic",
+    description:
+      "Use Anthropic AI capabilities in your workflows",
+    icon: "/images/anthropic.svg",
+  },
 ];
 
 interface NodeSelectorProps {
