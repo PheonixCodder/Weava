@@ -23,6 +23,7 @@ model User {
   sessions      Session[]
   accounts      Account[]
   workflows     Workflow[]
+  credentials  Credential[]
 
   @@unique([email])
   @@map("user")
@@ -97,6 +98,27 @@ enum NodeType {
   OPENAI
 }
 
+model Credential {
+  id String @id @default(cuid())
+  name String
+  value String
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @default(now()) @updatedAt
+
+  userId String
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  type CredentialType
+
+  Node Node[]
+}
+
+enum CredentialType {
+  GOOGLE_API
+  OPENAI_API
+  ANTHROPIC_API
+  STRIPE_API
+}
+
 model Node {
   id String @id @default(cuid())
   workflowId String
@@ -109,6 +131,9 @@ model Node {
 
   outputConnections Connection[] @relation("FromNode")
   inputConnections Connection[] @relation("ToNode")
+
+  credentialId String?
+  credential Credential? @relation(fields: [credentialId], references: [id], onDelete: SetNull)
 
   createdAt  DateTime @default(now())
   updatedAt  DateTime @default(now()) @updatedAt
