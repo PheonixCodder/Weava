@@ -1,7 +1,7 @@
 import { PAGINATION } from "@/lib/utils";
 import { parseAsInteger, parseAsString } from "nuqs/server";
 
-export const workflowsParams = {
+export const credentialsParams = {
   page: parseAsInteger
     .withDefault(PAGINATION.DEFAULT_PAGE)
     .withOptions({ clearOnDefault: true }),

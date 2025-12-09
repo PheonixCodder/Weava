@@ -1,27 +1,50 @@
 import { useTRPC } from "@/trpc/client";
 import {
   useMutation,
+  useQuery,
   useQueryClient,
   useSuspenseQuery,
 } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { useWorkflowParams } from "./use-workflows-params";
+import { useCredentialParams } from "./use-credentials-params";
 
-export const useSuspenseWorkflows = () => {
+// ------------------------------------------------------
+// GET MANY (with pagination + search)
+// ------------------------------------------------------
+export const useSuspenseCredentials = () => {
   const trpc = useTRPC();
-  const [params] = useWorkflowParams();
-  return useSuspenseQuery(trpc.workflows.getMany.queryOptions(params));
+  const [params] = useCredentialParams(); // { page, pageSize, search }
+
+  return useSuspenseQuery(
+    trpc.credentials.getMany.queryOptions(params)
+  );
 };
 
-export const useCreateWorkflow = () => {
+// ------------------------------------------------------
+// GET ONE
+// ------------------------------------------------------
+export const useSuspenseCredential = (id: string) => {
+  const trpc = useTRPC();
+  return useSuspenseQuery(
+    trpc.credentials.getOne.queryOptions({ id })
+  );
+};
+
+// ------------------------------------------------------
+// CREATE
+// ------------------------------------------------------
+export const useCreateCredential = () => {
   const trpc = useTRPC();
   const queryClient = useQueryClient();
 
   return useMutation(
-    trpc.workflows.create.mutationOptions({
+    trpc.credentials.create.mutationOptions({
       onSuccess: (data) => {
-        toast.success(`Workflow ${data.name} created`);
-        queryClient.invalidateQueries(trpc.workflows.getMany.queryOptions({}));
+        toast.success(`Credential ${data.name} created`);
+
+        queryClient.invalidateQueries(
+          trpc.credentials.getMany.queryOptions({})
+        );
       },
       onError: (error) => {
         toast.error(error.message);
@@ -30,15 +53,21 @@ export const useCreateWorkflow = () => {
   );
 };
 
-export const useRemoveWorkflow = () => {
+// ------------------------------------------------------
+// REMOVE
+// ------------------------------------------------------
+export const useRemoveCredential = () => {
   const trpc = useTRPC();
   const queryClient = useQueryClient();
 
   return useMutation(
-    trpc.workflows.remove.mutationOptions({
+    trpc.credentials.remove.mutationOptions({
       onSuccess: (data) => {
-        toast.success(`Workflow ${data.name} removed`);
-        queryClient.invalidateQueries(trpc.workflows.getMany.queryOptions({}));
+        toast.success(`Credential removed`);
+
+        queryClient.invalidateQueries(
+          trpc.credentials.getMany.queryOptions({})
+        );
       },
       onError: (error) => {
         toast.error(error.message);
@@ -47,62 +76,40 @@ export const useRemoveWorkflow = () => {
   );
 };
 
-export const useSuspenseWorkflow = (id: string) => {
-  const trpc = useTRPC();
-  return useSuspenseQuery(trpc.workflows.getOne.queryOptions({ id }));
-};
-
-export const useUpdateWorkflowName = () => {
+// ------------------------------------------------------
+// UPDATE (name, type, value)
+// ------------------------------------------------------
+export const useUpdateCredential = () => {
   const trpc = useTRPC();
   const queryClient = useQueryClient();
 
   return useMutation(
-    trpc.workflows.updateName.mutationOptions({
+    trpc.credentials.update.mutationOptions({
       onSuccess: (data) => {
-        toast.success(`Workflow ${data.name} updated`);
-        queryClient.invalidateQueries(trpc.workflows.getMany.queryOptions({}));
+        toast.success(`Credential ${data.name} updated`);
+
         queryClient.invalidateQueries(
-          trpc.workflows.getOne.queryOptions({ id: data.id })
+          trpc.credentials.getMany.queryOptions({})
+        );
+
+        queryClient.invalidateQueries(
+          trpc.credentials.getOne.queryOptions({ id: data.id })
         );
       },
       onError: (error) => {
-        toast.error(`Failed to update workflow ${error.message}`);
+        toast.error(`Failed to update credential: ${error.message}`);
       },
     })
   );
 };
 
-export const useUpdateWorkflow = () => {
-  const trpc = useTRPC();
-  const queryClient = useQueryClient();
-
-  return useMutation(
-    trpc.workflows.update.mutationOptions({
-      onSuccess: (data) => {
-        toast.success(`Workflow ${data.name} saved`);
-        queryClient.invalidateQueries(trpc.workflows.getMany.queryOptions({}));
-        queryClient.invalidateQueries(
-          trpc.workflows.getOne.queryOptions({ id: data.id })
-        );
-      },
-      onError: (error) => {
-        toast.error(`Failed to save workflow ${error.message}`);
-      },
-    })
-  );
-};
-
-export const useExecuteWorkflow = () => {
+// ------------------------------------------------------
+// GET BY TYPE
+// ------------------------------------------------------
+export const useCredentialsByType = (type: any) => {
   const trpc = useTRPC();
 
-  return useMutation(
-    trpc.workflows.execute.mutationOptions({
-      onSuccess: (data) => {
-        toast.success(`Workflow ${data.name} saved`);
-      },
-      onError: (error) => {
-        toast.error(`Failed to save workflow ${error.message}`);
-      },
-    })
+  return useQuery(
+    trpc.credentials.getByType.queryOptions({ type })
   );
 };
