@@ -1,5 +1,4 @@
 "use client";
-
 import React from "react";
 import {
   useCreateCredential,
@@ -178,19 +177,7 @@ export const CredentialsEmpty = () => {
   const router = useRouter();
 
   const handleCreate = () => {
-    createCredential.mutate(
-      {
-        name: "New Credential",
-        type: "API_KEY",
-        value: "",
-      },
-      {
-        onSuccess: (data) => {
-          router.push(`/credentials/${data.id}`);
-        },
-        onError: (error) => handleError(error),
-      }
-    );
+    router.push("/credentials/new");
   };
 
   return (
