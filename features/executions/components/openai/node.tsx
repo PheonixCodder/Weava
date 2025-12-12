@@ -15,6 +15,7 @@ type OpenAINodeData = {
   model?: typeof availableModels[number];
   systemPrompt?: string;
   userPrompt?: string;
+  credentialId?: string;
 };
 
 type OpenAINodeType = Node<OpenAINodeData>;
@@ -37,7 +38,7 @@ export const OpenAINode = memo((props: NodeProps<OpenAINodeType>) => {
   });
 
   const handleSubmit = (values: OpenAIFormValues) => {
-    setNodes((nodes) => {``
+    setNodes((nodes) => {
       return nodes.map((node) => {
         if (node.id === props.id) {
           return {

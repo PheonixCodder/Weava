@@ -23,6 +23,7 @@ import { useEntitySearch } from "@/hooks/use-entity-search";
 import { BadgeCheck } from "lucide-react"; // Replace with any icon you want
 import { formatDistanceToNow } from "date-fns";
 import { Credential, CredentialType } from "@prisma/client";
+import Image from "next/image";
 
 // ------------------------------------------------------
 // LOADING
@@ -77,12 +78,22 @@ export const CredentialSearch = () => {
 // ------------------------------------------------------
 // ITEM
 // ------------------------------------------------------
+
+const credentialLogo: Record<CredentialType, string> = {
+  [CredentialType.OPENAI_API]: "/images/openai.svg",
+  [CredentialType.ANTHROPIC_API]: "/images/anthropic.svg",
+  [CredentialType.GOOGLE_API]: "/images/gemini.svg",
+  [CredentialType.STRIPE_API] :"/images/stripe.svg",
+};
+
 export const CredentialItem = ({ data }: { data: Credential }) => {
   const removeCredential = useRemoveCredential();
 
   const handleRemove = () => {
     removeCredential.mutate({ id: data.id });
   };
+
+  const logo = credentialLogo[data.type] || "/images/openai.svg";
 
   return (
     <EntityItem
@@ -102,7 +113,7 @@ export const CredentialItem = ({ data }: { data: Credential }) => {
       }
       image={
         <div className="size-8 flex items-center justify-center">
-          <BadgeCheck />
+          <Image src={logo} alt={data.type} width={20} height={20} />
         </div>
       }
       onRemove={handleRemove}

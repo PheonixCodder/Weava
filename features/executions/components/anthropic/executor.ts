@@ -1,3 +1,4 @@
+import prisma from '@/lib/db';
 import { NodeExecutor } from "@/features/executions/type";
 import Handlebars from "handlebars";
 import { availableModels } from "./dialog";
@@ -16,6 +17,7 @@ type AnthropicData = {
   model?: (typeof availableModels)[number];
   systemPrompt?: string;
   userPrompt?: string;
+  credentialId?: string;
 };
 
 export const AnthropicExecutor: NodeExecutor<AnthropicData> = async ({
@@ -52,15 +54,41 @@ export const AnthropicExecutor: NodeExecutor<AnthropicData> = async ({
     );
     throw new NonRetriableError("Anthropic Node: Variable name is required");
   }
+  if (!data.credentialId) {
+    await publish(
+      anthropicChannel().status({
+        nodeId,
+        status: "error",
+        error: "Credential ID is required",
+      })
+    );
+    throw new NonRetriableError("Anthropic Node: Credential ID is required");
+  }
 
   const systemPrompt = data.systemPrompt
     ? Handlebars.compile(data.systemPrompt)(context)
     : "You are a helpful AI assistant.";
   const userPrompt = Handlebars.compile(data.userPrompt)(context);
-  const credentialValue = "YOUR_GOOGLE_CREDENTIALS_JSON";
+
+  const credential = await step.ai.wrap("get-credential", () => {
+    return prisma.credential.findUnique({
+      where: { id: data.credentialId, userId: context.userId as string },
+    });
+  });
+  
+  if (!credential) {
+    await publish(
+      anthropicChannel().status({
+        nodeId,
+        status: "error",
+        error: "Credential not found",
+      })
+    );
+    throw new NonRetriableError("Anthropic Node: Credential not found");
+  }
 
   const anthropic = createAnthropic({
-    apiKey: credentialValue,
+    apiKey: credential.value,
   });
 
   try {
