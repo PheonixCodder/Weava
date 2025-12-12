@@ -1,17 +1,18 @@
 "use client";
 import { CredentialType } from '@prisma/client';
 import React from 'react';
-import { useCreateCredential, useUpdateCredential } from '../hooks/use-credentials';
+import { useCreateCredential, useSuspenseCredential, useUpdateCredential } from '../hooks/use-credentials';
 import { useUpgradeModal } from '@/hooks/use-upgrade-modal';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import z from 'zod';
-
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { Loader } from 'lucide-react';
+import { useParams, useRouter } from 'next/navigation';
 
 interface CredentialFormProps {
   initialData?: {
@@ -38,6 +39,11 @@ const credentialTypeOptions = [
     label: 'Gemini API Key',
     logo: '/images/gemini.svg',
   },
+  {
+    value: CredentialType.STRIPE_API,
+    label: 'Stripe API Key',
+    logo: '/images/stripe.svg',
+  }
 ];
 
 const CredentialFormSchema = z.object({
@@ -52,6 +58,8 @@ const CredentialForm = ({ initialData }: CredentialFormProps) => {
   const createCredential = useCreateCredential();
   const updateCredential = useUpdateCredential();
   const { handleError, modal } = useUpgradeModal();
+
+  const router = useRouter();
 
   const isEdit = !!initialData?.id;
 
@@ -68,10 +76,12 @@ const CredentialForm = ({ initialData }: CredentialFormProps) => {
     if (isEdit && initialData?.id) {
       await updateCredential.mutateAsync(
         { id: initialData.id, ...values },
-        { onError: handleError }
+        { onError: handleError, onSuccess: () => router.push(`/credentials/${initialData.id}`) }
       );
     } else {
-      await createCredential.mutateAsync(values, { onError: handleError });
+      await createCredential.mutateAsync(values, { onError: handleError, onSuccess: (credential) => {
+        router.push(`/credentials/${credential.id}`);
+      } } );
     }
   };
 
@@ -172,7 +182,7 @@ const CredentialForm = ({ initialData }: CredentialFormProps) => {
                 type="submit"
                 className="w-full h-10 text-sm font-medium"
               >
-                {isEdit ? 'Update Credential' : 'Create Credential'}
+                {isEdit ? 'Update Credential' : createCredential.isPending ? <Loader className='animate-spin' /> : 'Create Credential'}
               </Button>
             </form>
           </Form>
@@ -183,3 +193,11 @@ const CredentialForm = ({ initialData }: CredentialFormProps) => {
 };
 
 export default CredentialForm;
+
+
+
+export const CredentialView = ( {credentialId}:{credentialId: string}) => {
+  const { data: credential } = useSuspenseCredential(credentialId);
+
+  return <CredentialForm initialData={credential} />;
+}

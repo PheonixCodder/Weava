@@ -32,6 +32,8 @@ import { useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import { useEffect } from "react";
 import type { AnthropicMessagesModelId } from "@ai-sdk/anthropic";
+import { CredentialType } from "@prisma/client";
+import { useCredentialsByType } from "@/features/credentials/hooks/use-credentials";
 
 export const availableModels: AnthropicMessagesModelId[] = [
 'claude-haiku-4-5', 'claude-haiku-4-5-20251001', 'claude-sonnet-4-5', 'claude-sonnet-4-5-20250929', 'claude-opus-4-1', 'claude-opus-4-0', 'claude-sonnet-4-0', 'claude-opus-4-1-20250805', 'claude-opus-4-20250514', 'claude-sonnet-4-20250514', 'claude-3-7-sonnet-latest', 'claude-3-7-sonnet-20250219', 'claude-3-5-haiku-latest', 'claude-3-5-haiku-20241022', 'claude-3-haiku-20240307'] as const;
@@ -41,6 +43,7 @@ const formSchema = z.object({
   model: z.enum(availableModels),
   systemPrompt: z.string().optional(),
   userPrompt: z.string().min(1, "User prompt is required"),
+  credentialId: z.string().min(1, "Credential is required"),
 });
 
 export type AnthropicFormValues = z.infer<typeof formSchema>;
@@ -59,9 +62,12 @@ export const AnthropicDialog = ({
   defaultValues = {}
 }: Props) => {
 
+    const { data: credentials, isLoading } = useCredentialsByType(CredentialType.ANTHROPIC_API);
+
 const form = useForm<z.infer<typeof formSchema>>({
   resolver: zodResolver(formSchema),
   defaultValues: {
+    credentialId: defaultValues.credentialId || "",
     variableName: defaultValues.variableName || "",
     model: defaultValues.model || availableModels[0],
     systemPrompt: defaultValues.systemPrompt || "",
@@ -73,9 +79,10 @@ useEffect(() => {
   if (open) {
     form.reset({
       variableName: defaultValues.variableName || "",
-    model: defaultValues.model || availableModels[0],
-    systemPrompt: defaultValues.systemPrompt || "",
-    userPrompt: defaultValues.userPrompt || "",
+      model: defaultValues.model || availableModels[0],
+      systemPrompt: defaultValues.systemPrompt || "",
+      userPrompt: defaultValues.userPrompt || "",
+      credentialId: defaultValues.credentialId || "",
     });
   }
 }, [open, defaultValues, form]);
@@ -84,7 +91,6 @@ useEffect(() => {
     onSubmit(values);
     onOpenChange(false);
   };
-
 
   const watchVariableName = form.watch("variableName") || "myAIResponse";
 
@@ -149,6 +155,33 @@ useEffect(() => {
                 </FormItem>
               )}
             />
+            <FormField
+                          control={form.control}
+                          name="credentialId"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Credential</FormLabel>
+                              <Select onValueChange={field.onChange} defaultValue={field.value} disabled={isLoading || !credentials || credentials.length === 0}>
+                                <FormControl>
+                                  <SelectTrigger className="w-full">
+                                    <SelectValue placeholder={isLoading ? "Loading credentials..." : (credentials && credentials.length > 0) ? "Select a credential" : "No credentials available"} />
+                                  </SelectTrigger>
+                                </FormControl>
+                                <SelectContent>
+                                  {credentials && credentials.map((credential) => (
+                                    <SelectItem key={credential.id} value={credential.id}>
+                                      {credential.name}
+                                    </SelectItem>
+                                  ))}
+                                </SelectContent>
+                              </Select>
+                              <FormDescription>
+                                The Google API credential to use for this request.
+                              </FormDescription>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
               <FormField
                 control={form.control}
                 name="systemPrompt"

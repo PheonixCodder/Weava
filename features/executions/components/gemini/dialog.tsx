@@ -32,6 +32,8 @@ import { useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import { useEffect } from "react";
 import type { GoogleGenerativeAIModelId } from "@ai-sdk/google";
+import { useCredentialsByType } from "@/features/credentials/hooks/use-credentials";
+import { CredentialType } from "@prisma/client";
 
 export const availableModels: GoogleGenerativeAIModelId[] = [
   "gemini-1.5-flash",
@@ -76,6 +78,7 @@ const formSchema = z.object({
   model: z.enum(availableModels),
   systemPrompt: z.string().optional(),
   userPrompt: z.string().min(1, "User prompt is required"),
+  credentialId: z.string().min(1, "Credential is required"),
 });
 
 export type GeminiFormValues = z.infer<typeof formSchema>;
@@ -94,11 +97,14 @@ export const GeminiDialog = ({
   defaultValues = {}
 }: Props) => {
 
+  const { data: credentials, isLoading } = useCredentialsByType(CredentialType.GOOGLE_API);
+
 const form = useForm<z.infer<typeof formSchema>>({
   resolver: zodResolver(formSchema),
   defaultValues: {
     variableName: defaultValues.variableName || "",
     model: defaultValues.model || availableModels[0],
+    credentialId: defaultValues.credentialId || "",
     systemPrompt: defaultValues.systemPrompt || "",
     userPrompt: defaultValues.userPrompt || "",
   },
@@ -108,9 +114,10 @@ useEffect(() => {
   if (open) {
     form.reset({
       variableName: defaultValues.variableName || "",
-    model: defaultValues.model || availableModels[0],
-    systemPrompt: defaultValues.systemPrompt || "",
-    userPrompt: defaultValues.userPrompt || "",
+      credentialId: defaultValues.credentialId || "",
+      model: defaultValues.model || availableModels[0],
+      systemPrompt: defaultValues.systemPrompt || "",
+      userPrompt: defaultValues.userPrompt || "",
     });
   }
 }, [open, defaultValues, form]);
@@ -179,6 +186,33 @@ useEffect(() => {
                   </Select>
                   <FormDescription>
                     The Gemini model to use for this request.
+                  </FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="credentialId"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Credential</FormLabel>
+                  <Select onValueChange={field.onChange} defaultValue={field.value} disabled={isLoading || !credentials || credentials.length === 0}>
+                    <FormControl>
+                      <SelectTrigger className="w-full">
+                        <SelectValue placeholder={isLoading ? "Loading credentials..." : (credentials && credentials.length > 0) ? "Select a credential" : "No credentials available"} />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      {credentials && credentials.map((credential) => (
+                        <SelectItem key={credential.id} value={credential.id}>
+                          {credential.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <FormDescription>
+                    The Google API credential to use for this request.
                   </FormDescription>
                   <FormMessage />
                 </FormItem>

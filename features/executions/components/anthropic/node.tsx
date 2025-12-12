@@ -15,6 +15,7 @@ type AnthropicNodeData = {
   model?: typeof availableModels[number];
   systemPrompt?: string;
   userPrompt?: string;
+  credentialId?: string;
 };
 
 type AnthropicNodeType = Node<AnthropicNodeData>;
@@ -37,7 +38,7 @@ export const AnthropicNode = memo((props: NodeProps<AnthropicNodeType>) => {
   });
 
   const handleSubmit = (values: AnthropicFormValues) => {
-    setNodes((nodes) => {``
+    setNodes((nodes) => {
       return nodes.map((node) => {
         if (node.id === props.id) {
           return {
