@@ -75,6 +75,20 @@ const executionNodes: NodeTypeOption[] = [
       "Use Anthropic AI capabilities in your workflows",
     icon: "/images/anthropic.svg",
   },
+  {
+    type: NodeType.DISCORD,
+    label: "Discord",
+    description:
+      "Send messages to Discord channels",
+    icon: "/images/discord.svg",
+  },
+  {
+    type: NodeType.SLACK,
+    label: "Slack",
+    description:
+      "Send messages to Slack channels",
+    icon: "/images/slack.svg",
+  }
 ];
 
 interface NodeSelectorProps {
