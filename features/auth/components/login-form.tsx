@@ -58,6 +58,32 @@ export function LoginForm() {
     });
   };
 
+  const signInGithub = () => {
+    authClient.signIn.social({
+      provider: "github",
+    }, {
+      onSuccess: (ctx) => {
+        router.push("/");
+      },
+      onError: (ctx) => {
+          toast.error(ctx.error.message);
+      }
+    })
+  }
+  
+  const signInGoogle = () => {
+    authClient.signIn.social({
+      provider: "google",
+    }, {
+      onSuccess: (ctx) => {
+        router.push("/");
+      },
+      onError: (ctx) => {
+          toast.error(ctx.error.message);
+      }
+    })
+  }
+
   const isPending = form.formState.isSubmitting;
 
   return (
@@ -78,6 +104,7 @@ export function LoginForm() {
                   className="flex items-center justify-center gap-2 w-full hover:bg-gray-100 transition"
                   type="button"
                   disabled={isPending}
+                  onClick={signInGithub}
                 >
                   <Github className="w-5 h-5" />
                   Continue with Github
@@ -87,6 +114,7 @@ export function LoginForm() {
                   className="flex items-center justify-center gap-2 w-full hover:bg-gray-100 transition"
                   type="button"
                   disabled={isPending}
+                  onClick={signInGoogle}
                 >
                   <GoogleIcon className="text-[18px]!" />
                   Continue with Google
