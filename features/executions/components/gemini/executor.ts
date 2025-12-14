@@ -4,9 +4,9 @@ import { geminiChannel } from "@/inngest/channels/gemini";
 import { createGoogleGenerativeAI } from "@ai-sdk/google";
 import { generateText } from "ai";
 import { NonRetriableError } from "inngest";
-import { type GoogleGenerativeAIModelId } from "@ai-sdk/google";
 import prisma from "@/lib/db";
 import { decrypt } from '../../../../lib/encryption';
+import { availableModels } from "./dialog";
 
 Handlebars.registerHelper("json", function (context) {
   return new Handlebars.SafeString(JSON.stringify(context, null, 2));
@@ -14,7 +14,7 @@ Handlebars.registerHelper("json", function (context) {
 
 type GeminiData = {
   variableName?: string;
-  model?: GoogleGenerativeAIModelId[number];
+  model?: (typeof availableModels)[number];
   systemPrompt?: string;
   userPrompt?: string;
   credentialId?: string;
