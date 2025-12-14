@@ -31,12 +31,22 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import { useEffect } from "react";
-import type { AnthropicMessagesModelId } from "@ai-sdk/anthropic";
 import { CredentialType } from "@prisma/client";
 import { useCredentialsByType } from "@/features/credentials/hooks/use-credentials";
 
-export const availableModels: AnthropicMessagesModelId[] = [
-'claude-haiku-4-5', 'claude-haiku-4-5-20251001', 'claude-sonnet-4-5', 'claude-sonnet-4-5-20250929', 'claude-opus-4-1', 'claude-opus-4-0', 'claude-sonnet-4-0', 'claude-opus-4-1-20250805', 'claude-opus-4-20250514', 'claude-sonnet-4-20250514', 'claude-3-7-sonnet-latest', 'claude-3-7-sonnet-20250219', 'claude-3-5-haiku-latest', 'claude-3-5-haiku-20241022', 'claude-3-haiku-20240307'] as const;
+
+export const availableModels = [
+  "claude-4.5-opus",
+  "claude-4.5-sonnet",
+  "claude-opus-4-1",
+  "claude-sonnet-4-5",
+  "claude-3.7-sonnet-latest",
+  "claude-3.7-sonnet-20250219",
+  "claude-3.5-haiku-latest",
+  "claude-3.5-haiku-20241022",
+] as const;
+
+export type AnthropicModelId = (typeof availableModels)[number];
 
 const formSchema = z.object({
   variableName: z.string().min(1,{ message: "Variable name is required"}).regex(/^[a-zA-Z_][a-zA-Z0-9_]*$/, { message: "Variable name must start with a letter or underscore and contain only letters, numbers, and underscores." }),

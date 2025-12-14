@@ -35,9 +35,24 @@ import type { OpenAICompletionModelId } from "@ai-sdk/openai";
 import { useCredentialsByType } from "@/features/credentials/hooks/use-credentials";
 import { CredentialType } from "@prisma/client";
 
-export const availableModels: OpenAICompletionModelId[] = [
-  "gpt-3.5-turbo-instruct",
+export const availableModels = [
+  "gpt-5.2-instant",
+  "gpt-5.2-pro",
+  "gpt-4.1",
+  "gpt-4.1-mini",
+  "gpt-4o",
+  "gpt-4o-mini",
+  "gpt-4o-mini-0613",
+  "gpt-4o-mini-1024",
+  "o3",
+  "o3-mini",
+  "o1",
+  "o1-preview",
+  "o1-mini",
 ] as const;
+
+export type OpenAIModelId = (typeof availableModels)[number];
+
 
 const formSchema = z.object({
   variableName: z.string().min(1,{ message: "Variable name is required"}).regex(/^[a-zA-Z_][a-zA-Z0-9_]*$/, { message: "Variable name must start with a letter or underscore and contain only letters, numbers, and underscores." }),

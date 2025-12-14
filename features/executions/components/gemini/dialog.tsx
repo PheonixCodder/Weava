@@ -31,47 +31,28 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import { useEffect } from "react";
-import type { GoogleGenerativeAIModelId } from "@ai-sdk/google";
 import { useCredentialsByType } from "@/features/credentials/hooks/use-credentials";
 import { CredentialType } from "@prisma/client";
 
-export const availableModels: GoogleGenerativeAIModelId[] = [
+export const availableModels = [
   "gemini-1.5-flash",
   "gemini-1.5-flash-latest",
-  "gemini-1.5-flash-001",
-  "gemini-1.5-flash-002",
-  "gemini-1.5-flash-8b",
-  "gemini-1.5-flash-8b-latest",
-  "gemini-1.5-flash-8b-001",
-
   "gemini-1.5-pro",
   "gemini-1.5-pro-latest",
-  "gemini-1.5-pro-001",
-  "gemini-1.5-pro-002",
-
   "gemini-2.0-flash",
+  "gemini-2.0-flash-lite",
   "gemini-2.0-flash-001",
   "gemini-2.0-flash-live-001",
-  "gemini-2.0-flash-lite",
-  "gemini-2.0-pro-exp-02-05",
-  "gemini-2.0-flash-thinking-exp-01-21",
-  "gemini-2.0-flash-exp",
-
-  "gemini-2.5-pro",
   "gemini-2.5-flash",
-  "gemini-2.5-flash-image-preview",
   "gemini-2.5-flash-lite",
-  "gemini-2.5-flash-lite-preview-09-2025",
   "gemini-2.5-flash-preview-04-17",
-  "gemini-2.5-flash-preview-09-2025",
-  "gemini-2.5-pro-exp-03-25",
+  "gemini-2.5-flash-lite-preview-09-2025",
+  "gemini-2.5-pro",
+] as const;
 
-  "gemini-exp-1206",
+export type GoogleGeminiModelId = (typeof availableModels)[number];
 
-  "gemma-3-12b-it",
-  "gemma-3-27b-it",
-];
-
+export type GeminiModelId = (typeof availableModels)[number];
 
 const formSchema = z.object({
   variableName: z.string().min(1,{ message: "Variable name is required"}).regex(/^[a-zA-Z_][a-zA-Z0-9_]*$/, { message: "Variable name must start with a letter or underscore and contain only letters, numbers, and underscores." }),
