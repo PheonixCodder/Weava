@@ -7,6 +7,7 @@ import {
   protectedProcedure,
 } from "@/trpc/init";
 import z from "zod";
+import { encrypt } from "@/lib/encryption";
 
 export const credentialsRouter = createTRPCRouter({
   create: premiumProcedure
@@ -24,7 +25,7 @@ export const credentialsRouter = createTRPCRouter({
           name,
           type,
           userId: ctx.auth.user.id,
-          value,
+          value: encrypt(value),
         },
       });
     }),
@@ -48,13 +49,9 @@ export const credentialsRouter = createTRPCRouter({
     )
     .mutation(async ({ ctx, input }) => {
       const { id, name, type, value } = input;
-
-      const credential = await prisma.credential.findUniqueOrThrow({
-        where: { id, userId: ctx.auth.user.id },
-      });
       return prisma.credential.update({
         where: { id, userId: ctx.auth.user.id },
-        data: { name, type, value },
+        data: { name, type, value: encrypt(value) },
       });
     }),
 

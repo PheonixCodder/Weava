@@ -7,6 +7,7 @@ import { generateText } from "ai";
 import { NonRetriableError } from "inngest";
 import { anthropicChannel } from "@/inngest/channels/anthropic";
 import { createAnthropic } from "@ai-sdk/anthropic";
+import { decrypt } from '@/lib/encryption';
 
 Handlebars.registerHelper("json", function (context) {
   return new Handlebars.SafeString(JSON.stringify(context, null, 2));
@@ -89,7 +90,7 @@ export const AnthropicExecutor: NodeExecutor<AnthropicData> = async ({
   }
 
   const anthropic = createAnthropic({
-    apiKey: credential.value,
+    apiKey: decrypt(credential.value),
   });
 
   try {

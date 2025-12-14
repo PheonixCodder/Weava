@@ -12,7 +12,6 @@ import {
   XCircleIcon,
 } from "lucide-react";
 import Link from 'next/link';
-import { useParams } from 'next/navigation';
 import { useState } from 'react';
 import { useSuspenseExecution } from './hooks/use-executions';
 
