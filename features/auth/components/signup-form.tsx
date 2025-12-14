@@ -26,6 +26,7 @@ import { Loader2, Github } from "lucide-react";
 import GoogleIcon from "@mui/icons-material/Google";
 import { authClient } from "@/lib/auth-client";
 import { toast } from "sonner";
+import Image from "next/image";
 
 const signUpSchema = z.object({
   email: z.string().email("Please enter a valid email address"),
@@ -113,7 +114,7 @@ export function SignUpForm() {
                   disabled={isPending}
                   onClick={signInGithub}
                 >
-                  <Github className="w-5 h-5" />
+                  <Image src={'/images/github.svg'} alt="Github" className="size-5" />
                   Continue with GitHub
                 </Button>
                 <Button
@@ -123,7 +124,7 @@ export function SignUpForm() {
                   disabled={isPending}
                   onClick={signInGoogle}
                 >
-                  <GoogleIcon className="text-[18px]!" />
+                  <Image src={'/images/google.svg'} alt="Google" className="size-5" />
                   Continue with Google
                 </Button>
               </div>
