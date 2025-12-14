@@ -12,7 +12,7 @@ import { geminiChannel } from "./channels/gemini";
 import { discordChannel } from "./channels/discord";
 
 export const executeWorkflow = inngest.createFunction(
-  { id: "execute-workflow", retries: 0, onFailure: async ({ event, step }) => {
+  { id: "execute-workflow", retries: process.env.NODE_ENV === "development" ? 0 : 3, onFailure: async ({ event, step }) => {
     return prisma.execution.updateMany({
       where: { inngestEventId: event.data.event.id },
       data: { status: ExecutionStatus.FAILED, completedAt: new Date(), error: event.data.error.message, errorStack: event.data.error.stack }

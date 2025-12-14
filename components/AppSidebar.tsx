@@ -1,5 +1,5 @@
 "use client";
-import React, { Suspense } from "react";
+import React from "react";
 import { CreditCardIcon, LogOutIcon, StarIcon } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";

@@ -7,7 +7,6 @@ import { workflowParamsLoader } from "@/features/workflows/server/params-loader"
 import { prefetchWorkflows } from "@/features/workflows/server/prefetch";
 import { requireAuth } from "@/lib/auth-utils";
 import { HydrateClient } from "@/trpc/server";
-import { Loader2Icon } from "lucide-react";
 import type { SearchParams } from "nuqs/server";
 import React, { Suspense } from "react";
 import { ErrorBoundary } from "react-error-boundary";

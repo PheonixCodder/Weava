@@ -1,7 +1,5 @@
 "use client";
-import { TRPCClientError } from "@trpc/client";
-import { useState } from "react";
-import { AlertDialog, AlertDialogCancel, AlertDialogAction, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "./ui/alert-dialog";
+import { AlertDialog, AlertDialogCancel, AlertDialogAction, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "./ui/alert-dialog";
 import { authClient } from "@/lib/auth-client";
 
 interface UpgradeModalProps {

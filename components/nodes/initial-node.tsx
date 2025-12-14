@@ -21,3 +21,4 @@ export const InitialNode = memo((props: NodeProps) => {
 })
 
 export type RegisteredNodeType = keyof typeof nodeComponents
+InitialNode.displayName = "InitialNode"
