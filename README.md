@@ -251,6 +251,6 @@ Documented tRPC areas include:
 ### Clone and install
 
 ```bash
-git clone <your-repo-url>
+git clone https://github.com/PheonixCodder/Weava.git
 cd weava
 pnpm install
