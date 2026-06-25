@@ -2,8 +2,6 @@
 
 **Weava** is a workflow automation platform for building, configuring, and executing node-based workflows in a visual editor. It combines **trigger nodes**, **execution nodes**, **credential management**, **execution tracking**, and **background orchestration** into a single app.
 
-> **Documentation note:** This README is based on the available project docs. Some exact values—especially full `.env` keys, deployment details, and complete script definitions—are **not fully documented** and are intentionally left as explicit stubs below.
-
 ---
 
 ## Overview
